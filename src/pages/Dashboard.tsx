@@ -2,15 +2,34 @@ import { useState, useRef } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
 import { KPICard } from "@/components/dashboard/KPICard";
- import { SocialIntegrations } from "@/components/dashboard/SocialIntegrations";
+import { EngagementChart } from "@/components/dashboard/EngagementChart";
+import { PostingHeatmap } from "@/components/dashboard/PostingHeatmap";
+import { ContentDNA } from "@/components/dashboard/ContentDNA";
+import { StrategyChat } from "@/components/dashboard/StrategyChat";
+import { EngagementAlerts } from "@/components/dashboard/EngagementAlerts";
+import { ContentSimulator } from "@/components/dashboard/ContentSimulator";
+import { WeeklySummary } from "@/components/dashboard/WeeklySummary";
+import { ContentPerformance } from "@/components/dashboard/ContentPerformance";
+import { SocialIntegrations } from "@/components/dashboard/SocialIntegrations";
 import { Heart, MessageCircle, Share2, Eye, Users, TrendingUp } from "lucide-react";
 
 export default function Dashboard() {
-
   const [activeSection, setActiveSection] = useState("overview");
   const [platform, setPlatform] = useState("all");
   const [timeRange, setTimeRange] = useState("7d");
- export default function Dashboard() {
+  const previousSection = useRef("overview");
+
+  const handleSectionChange = (section: string) => {
+    previousSection.current = activeSection;
+    setActiveSection(section);
+  };
+
+  const handleBack = () => {
+    setActiveSection(previousSection.current);
+  };
+
+  const renderContent = () => {
+    switch (activeSection) {
       case "overview":
         return (
           <div className="space-y-6">
@@ -73,7 +92,54 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <PostingHeatmap />
               <EngagementAlerts />
- export default function Dashboard() {
+            </div>
+          </div>
+        );
+
+      case "performance":
+        return <ContentPerformance />;
+
+      case "heatmap":
+        return <PostingHeatmap />;
+
+      case "dna":
+        return <ContentDNA />;
+
+      case "chat":
+        return (
+          <div className="max-w-3xl mx-auto">
+            <StrategyChat />
+          </div>
+        );
+
+      case "alerts":
+        return <EngagementAlerts />;
+
+      case "simulator":
+        return <ContentSimulator />;
+
+      case "summary":
+        return <WeeklySummary />;
+
+      case "integrations":
+        return <SocialIntegrations />;
+
+      default:
+        return null;
+    }
+  };
+
+  const sectionTitles: Record<string, { title: string; subtitle: string }> = {
+    overview: { title: "Dashboard Overview", subtitle: "Your social media performance at a glance" },
+    performance: { title: "Content Performance", subtitle: "Analyze individual post metrics with AI insights" },
+    heatmap: { title: "Smart Posting Times", subtitle: "Discover your audience's most active hours" },
+    dna: { title: "Content DNA Analyzer", subtitle: "Understand your content personality" },
+    chat: { title: "Strategy Chat", subtitle: "Get AI-powered content recommendations" },
+    alerts: { title: "Engagement Alerts", subtitle: "Stay informed about performance changes" },
+    simulator: { title: "Performance Simulator", subtitle: "Predict engagement before you post" },
+    summary: { title: "Weekly Summary", subtitle: "AI-generated performance report" },
+    integrations: { title: "Connect Social Media Accounts", subtitle: "Connect your social platforms to start analytics" },
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -82,7 +148,9 @@ export default function Dashboard() {
       <div className="ml-64 transition-all duration-300">
         <Header
           platform={platform}
- export default function Dashboard() {
+          onPlatformChange={setPlatform}
+          timeRange={timeRange}
+          onTimeRangeChange={setTimeRange}
           showBackButton={activeSection === "integrations"}
           onBack={handleBack}
         />
@@ -92,3 +160,15 @@ export default function Dashboard() {
           <div className="mb-6">
             <h1 className="text-2xl font-display font-bold text-foreground">
               {sectionTitles[activeSection]?.title}
+            </h1>
+            <p className="text-muted-foreground">
+              {sectionTitles[activeSection]?.subtitle}
+            </p>
+          </div>
+
+          {renderContent()}
+        </main>
+      </div>
+    </div>
+  );
+}
